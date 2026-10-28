@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Letture">
+<title>Le mie letture</title>
+<style>
+:root{--bg:#fff0f5;--card:#fff;--ink:#4a2236;--muted:#9a6b80;--pink:#e75a8f;--soft:#fbd5e3;--line:#f6c3d6;--on:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1520;--card:#3a1e2d;--ink:#fbe6ee;--muted:#d49ab3;--pink:#f06fa0;--soft:#53293e;--line:#5d3248;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#2a1520;--card:#3a1e2d;--ink:#fbe6ee;--muted:#d49ab3;--pink:#f06fa0;--soft:#53293e;--line:#5d3248;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+h1{font:700 26px/1.2 Georgia,"Times New Roman",serif;margin:6px 0 2px}
+.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(231,90,143,.08)}
+.stats{display:flex;gap:10px}
+.stat{flex:1;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--pink)}
+.stat span{font-size:12px;color:var(--muted)}
+.week{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:12px}
+.bar{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+.bar i{display:block;background:var(--pink);border-radius:6px 6px 2px 2px;min-height:3px;opacity:.85;margin-bottom:3px}
+.bar i.z{background:var(--soft)}
+.book h2{font:700 18px/1.25 Georgia,serif;margin:0}
+.author{color:var(--muted);font-size:14px;margin:0 0 10px}
+.prog{height:12px;background:var(--soft);border-radius:99px;overflow:hidden}
+.prog div{height:100%;background:linear-gradient(90deg,#f49ac0,var(--pink));border-radius:99px;transition:width .4s}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:6px 0 10px}
+.row{display:flex;gap:8px;align-items:center}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-width:0}
+input:focus{outline:2px solid var(--pink)}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:var(--pink);color:var(--on);font-weight:600}
+button.ghost{background:var(--soft);color:var(--ink)}
+button.small{padding:6px 10px;font-size:13px}
+.chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.hist{margin-top:10px;font-size:13px;color:var(--muted)}
+.hist summary{cursor:pointer}
+.hist li{margin:3px 0}
+.done{background:var(--soft);color:var(--ink);border-radius:10px;padding:6px 10px;font-size:14px;margin-bottom:8px}
+.form{display:grid;gap:8px;margin-top:10px}
+#dlg{position:fixed;inset:0;background:rgba(74,34,54,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}#dlg[hidden]{display:none}#dlg .box{background:var(--card);border-radius:18px;padding:16px;width:100%;max-width:380px;border:1px solid var(--line)}#dlg p{margin:0 0 10px}textarea{font:inherit;width:100%;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px}
+.days{padding:0;margin:6px 0 0}.days li{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
+.empty{text-align:center;color:var(--muted);padding:26px 8px}
+.foot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Le mie letture 🌸</h1>
+  <p class="sub" id="greet"></p>
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><b id="sStreak">0</b><span>giorni di fila</span></div>
+      <div class="stat"><b id="sToday">0</b><span>pagine oggi</span></div>
+      <div class="stat"><b id="sTotal">0</b><span>pagine totali</span></div>
+    </div>
+    <div class="week" id="week"></div>
+  </div>
+  <div id="books"></div>
+  <details class="card" id="addBox">
+    <summary style="cursor:pointer;font-weight:600;color:var(--pink)">＋ Aggiungi un libro</summary>
+    <div class="form">
+      <input id="fTitle" placeholder="Titolo">
+      <input id="fAuthor" placeholder="Autore (facoltativo)">
+      <input id="fTotal" type="number" inputmode="numeric" min="1" placeholder="Pagine totali">
+      <button data-a="add">Aggiungi</button>
+    </div>
+  </details>
+  <div class="foot">
+    <button class="ghost small" data-a="export">Salva backup</button>
+    <button class="ghost small" data-a="import">Ripristina backup</button>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+    <div id="dlg" hidden></div>
+  </div>
+</main>
+<script>
+var KEY="pagine-lette-v1",state={books:[]},dates={};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);if(s&&Array.isArray(s.books))state=s}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function ds(d){d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function read(b){return b.log.reduce(function(a,e){return a+e.p},0)}
+function fmt(d){return new Date(d+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"short"})}
+function perDay(){var m={};state.books.forEach(function(b){b.log.forEach(function(e){m[e.d]=(m[e.d]||0)+e.p})});return m}
+function streak(){var m=perDay(),d=new Date(),n=0;if(!(m[ds(d)]>0))d.setDate(d.getDate()-1);while(m[ds(d)]>0){n++;d.setDate(d.getDate()-1)}return n}
+function eta(b){var r=read(b),left=b.total-r;if(left<=0||!b.log.length)return"";
+ var first=b.log.reduce(function(a,e){return e.d<a?e.d:a},b.log[0].d);
+ var days=Math.max(1,Math.round((new Date(ds()+"T12:00:00")-new Date(first+"T12:00:00"))/864e5)+1);
+ var avg=r/days;if(avg<=0)return"";var n=Math.ceil(left/avg),d=new Date();d.setDate(d.getDate()+n);
+ return"Finito verso il "+fmt(ds(d))}
+function render(){
+ var m=perDay(),t=ds();
+ document.getElementById("greet").textContent=state.books.length?"Un po’ di pagine ogni giorno, e il libro si finisce da solo.":"Aggiungi il tuo primo libro per iniziare.";
+ document.getElementById("sStreak").textContent=streak();
+ document.getElementById("sToday").textContent=m[t]||0;
+ document.getElementById("sTotal").textContent=state.books.reduce(function(a,b){return a+read(b)},0);
+ var days=[],mx=1;for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var k=ds(d);days.push({k:k,v:m[k]||0,l:d.toLocaleDateString("it-IT",{weekday:"narrow"})});mx=Math.max(mx,m[k]||0)}
+ document.getElementById("week").innerHTML=days.map(function(x){return'<div class="bar"><i class="'+(x.v?"":"z")+'" style="height:'+Math.round(x.v/mx*48)+'px"></i>'+esc(x.l)+"</div>"}).join("");
+ var h="";
+ if(!state.books.length)h='<div class="empty">📖<br>Nessun libro per ora.</div>';
+ state.books.forEach(function(b){
+  var r=Math.min(read(b),b.total),pc=Math.round(r/b.total*100),fin=read(b)>=b.total,id=b.id;
+  var hist=b.log.slice().sort(function(x,y){return x.d<y.d?1:-1}).map(function(e){return'<li><span>'+fmt(e.d)+': <b>'+e.p+'</b> pagine</span><span><button class="ghost small" data-a="edit" data-id="'+id+'" data-d="'+e.d+'">✏️</button> <button class="ghost small" data-a="rm" data-id="'+id+'" data-d="'+e.d+'">✕</button></span></li>'}).join("");
+  h+='<div class="card book"><div class="top"><h2>'+esc(b.title)+'</h2><button class="ghost small" data-a="del" data-id="'+id+'" title="Elimina">✕</button></div>'+
+  '<p class="author">'+esc(b.author||"")+"</p>"+(fin?'<div class="done">🎉 Libro finito, brava!</div>':"")+
+  '<div class="prog"><div style="width:'+pc+'%"></div></div>'+
+  '<div class="meta"><span>Pagina '+r+" di "+b.total+" · "+pc+"%</span><span>"+Math.max(0,b.total-r)+" rimaste</span></div>"+
+  (fin?"":'<div class="row"><input type="number" inputmode="numeric" min="1" placeholder="Pagine lette" id="in'+id+'"><button data-a="log" data-id="'+id+'">Aggiungi</button></div>'+'<div class="row" style="margin-top:8px"><span class="meta" style="margin:0;white-space:nowrap">Giorno:</span><input type="date" data-dt="'+id+'" max="'+t+'" value="'+(dates[id]||t)+'"></div>'+
+  '<div class="chips"><button class="ghost small" data-a="q" data-n="5" data-id="'+id+'">+5</button><button class="ghost small" data-a="q" data-n="10" data-id="'+id+'">+10</button><button class="ghost small" data-a="q" data-n="20" data-id="'+id+'">+20</button></div>')+
+  '<div class="hist">'+(eta(b)?"<div>"+eta(b)+"</div>":"")+(hist?"<details open><summary>Storico giorno per giorno ("+b.log.length+")</summary><ul class=\"days\">"+hist+"</ul></details>":"")+"</div></div>"});
+ document.getElementById("books").innerHTML=h}
+function dlg(msg,val,cb){var o=document.getElementById("dlg"),isN=typeof val==="number",isT=typeof val==="string";
+ o.innerHTML='<div class="box"><p>'+esc(msg)+'</p>'+(isN?'<input type="number" inputmode="numeric" min="0" id="dv" value="'+val+'">':'')+(isT?'<textarea id="dv" rows="6">'+esc(val)+'</textarea>':'')+'<div class="row" style="justify-content:flex-end;margin-top:10px">'+(cb?'<button class="ghost" id="dn">Annulla</button>':'')+'<button id="dk">OK</button></div></div>';
+ o.hidden=false;var f=document.getElementById("dv");if(f){f.focus();if(isT)f.select()}
+ document.getElementById("dk").onclick=function(){var v=f?f.value:true;o.hidden=true;if(cb)cb(v)};
+ var n=document.getElementById("dn");if(n)n.onclick=function(){o.hidden=true}}
+function note(m){dlg(m,null)}
+function find(id){return state.books.filter(function(b){return b.id===id})[0]}
+function setDay(id,d,n){var b=find(id);if(!b)return;var e=b.log.filter(function(x){return x.d===d})[0],cur=e?e.p:0;
+ n=Math.max(0,Math.min(n,b.total-(read(b)-cur)));
+ b.log=b.log.filter(function(x){return x.d!==d});if(n>0)b.log.push({d:d,p:n});b.log.sort(function(x,y){return x.d<y.d?-1:1});save();render()}
+function addPages(id,n){var b=find(id);n=parseInt(n,10);if(!b||!n||n<1)return;
+ var d=dates[id]||ds(),e=b.log.filter(function(x){return x.d===d})[0];setDay(id,d,(e?e.p:0)+n)}
+document.addEventListener("click",function(e){var el=e.target.closest("[data-a]");if(!el)return;var a=el.dataset.a,id=el.dataset.id;
+ if(a==="add"){var t=document.getElementById("fTitle").value.trim(),n=parseInt(document.getElementById("fTotal").value,10);
+  if(!t||!n||n<1){note("Inserisci titolo e numero di pagine");return}
+  state.books.unshift({id:"b"+Date.now(),title:t,author:document.getElementById("fAuthor").value.trim(),total:n,log:[]});
+  ["fTitle","fAuthor","fTotal"].forEach(function(i){document.getElementById(i).value=""});document.getElementById("addBox").open=false;save();render()}
+ else if(a==="log"){addPages(id,document.getElementById("in"+id).value)}
+ else if(a==="q"){addPages(id,el.dataset.n)}
+ else if(a==="edit"){var d0=el.dataset.d,b3=find(id),e3=b3&&b3.log.filter(function(x){return x.d===d0})[0];if(e3){dlg("Pagine lette il "+fmt(d0)+":",e3.p,function(v){var nn=parseInt(v,10);if(!isNaN(nn))setDay(id,d0,nn)})}}
+ else if(a==="rm"){var d1=el.dataset.d;dlg("Rimuovere le pagine del "+fmt(d1)+"?",null,function(){setDay(id,d1,0)})}
+ else if(a==="del"){var b2=find(id);if(b2)dlg("Eliminare “"+b2.title+"” e il suo storico?",null,function(){state.books=state.books.filter(function(x){return x.id!==id});save();render()})}
+ else if(a==="export"){dlg("Copia tutto questo testo e conservalo (ad esempio nelle Note). Per ripristinare usa “Ripristina backup” e incollalo.",JSON.stringify(state))}
+ else if(a==="import"){dlg("Incolla qui il testo del backup:","",function(v){try{var s=JSON.parse(v);if(!s||!Array.isArray(s.books))throw 0;dlg("Sostituire i dati attuali con il backup?",null,function(){state=s;save();render()})}catch(e){note("Backup non valido")}})}});
+document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id&&e.target.id.indexOf("in")===0&&e.target.id!=="in"){addPages(e.target.id.slice(2),e.target.value)}});
+document.getElementById("file").addEventListener("change",function(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();
+ r.onload=function(){try{var s=JSON.parse(r.result);if(!s||!Array.isArray(s.books))throw 0;if(confirm("Sostituire i dati attuali con il backup?")){state=s;save();render()}}catch(e){alert("File di backup non valido")}};r.readAsText(f);ev.target.value=""});
+document.addEventListener("change",function(e){var id=e.target.dataset&&e.target.dataset.dt;if(id){var v=e.target.value;dates[id]=(v&&v<=ds())?v:ds();render()}});
+load();render();
+</script>
+</body>
+</html>
