@@ -98,7 +98,7 @@ function eta(b){var r=read(b),left=b.total-r;if(left<=0||!b.log.length)return"";
  return"Finito verso il "+fmt(ds(d))}
 function render(){
  var m=perDay(),t=ds();
- document.getElementById("greet").textContent=state.books.length?"Un po’ di pagine ogni giorno, e il libro si finisce da solo.":"Aggiungi il tuo primo libro per iniziare.";
+ document.getElementById("greet").textContent=state.books.length?"Dimmi un po quante pagine hai letto oggi.":"Aggiungi il tuo primo libro per iniziare.";
  document.getElementById("sStreak").textContent=streak();
  document.getElementById("sToday").textContent=m[t]||0;
  document.getElementById("sTotal").textContent=state.books.reduce(function(a,b){return a+read(b)},0);
